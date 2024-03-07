@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import EmployeeForm, ToolForm
+from .forms import EmployeeForm, ToolForm, JobForm
 
 
 def employee_create_view(request):
@@ -24,6 +24,18 @@ def tool_create_view(request):
         form = ToolForm()
 
     return render(request, 'webapp/tool_form.html', {'form': form})
+
+
+def job_create_view(request):
+    if request.method == 'POST':
+        form = JobForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/webapp/success_page/')
+    else:
+        form = JobForm()
+
+    return render(request, 'webapp/job_form.html', {'form': form})
 
 
 def success_page(request):

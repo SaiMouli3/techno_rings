@@ -1,5 +1,5 @@
 from django import forms
-from .models import Employee, Tool
+from .models import Employee, Tool, Job
 
 
 class EmployeeForm(forms.ModelForm):
@@ -12,3 +12,12 @@ class ToolForm(forms.ModelForm):
     class Meta:
         model = Tool
         fields = ['tool_code', 'tool_name', 'max_length', 'cost', 'length_cut', 'no_of_brk_points']
+
+
+class JobForm(forms.ModelForm):
+    # tool_code = forms.ModelMultipleChoiceField(queryset=Tool.objects.all(), widget=forms.CheckboxSelectMultiple)
+    class Meta:
+        model = Job
+        fields = ['job_id', 'job_name', 'length', 'no_of_holes', 'tool_code']
+
+
