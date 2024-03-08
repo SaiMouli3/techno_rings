@@ -11,7 +11,7 @@ class EmployeeForm(forms.ModelForm):
 class ToolForm(forms.ModelForm):
     class Meta:
         model = Tool
-        fields = ['tool_code', 'tool_name', 'max_length', 'cost', 'length_cut', 'no_of_brk_points']
+        fields = ['tool_code', 'tool_name', 'max_length', 'cost', 'length_cut']
 
 
 class JobForm(forms.ModelForm):
