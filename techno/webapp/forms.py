@@ -21,3 +21,5 @@ class JobForm(forms.ModelForm):
         fields = ['job_id', 'job_name', 'length', 'no_of_holes', 'tool_code']
 
 
+
+

@@ -20,7 +20,7 @@ class Tool(models.Model):
     cost = models.FloatField()
     length_cut = models.FloatField()
     no_of_brk_points = models.IntegerField()
-    tool_efficiency = models.FloatField()
+    tool_efficiency = models.FloatField(default=None, null=True)
 
     def __str__(self):
         return f"Tool: {self.tool_name} (Code: {self.tool_code})"
