@@ -19,7 +19,7 @@ class Tool(models.Model):
     max_length = models.FloatField()
     cost = models.FloatField()
     length_cut = models.FloatField()
-    no_of_brk_points = models.IntegerField()
+    no_of_brk_points = models.IntegerField(default=None, null=True)
     tool_efficiency = models.FloatField(default=None, null=True)
 
     def __str__(self):
@@ -28,14 +28,19 @@ class Tool(models.Model):
 
 # Job Table
 class Job(models.Model):
-    job_id = models.IntegerField(primary_key=True)
+    job_id = models.IntegerField(null=False)
     job_name = models.CharField(max_length=100)
     length = models.FloatField()
     no_of_holes = models.IntegerField()
     tool_code = models.ForeignKey(Tool, on_delete=models.CASCADE, db_column='tool_code', to_field='tool_code')
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['job_id', 'tool_code'], name='unique_job_tool_combination')
+        ]
+
     def __str__(self):
-        return f"Job: {self.job_name} (ID: {self.job_id})"
+        return f"Job: {self.job_name} (ID: {self.job_id}, Tool Code: {self.tool_code})"
 
 
 # Machine Table

@@ -15,11 +15,15 @@ class ToolForm(forms.ModelForm):
 
 
 class JobForm(forms.ModelForm):
-    # tool_code = forms.ModelMultipleChoiceField(queryset=Tool.objects.all(), widget=forms.CheckboxSelectMultiple)
     class Meta:
         model = Job
-        fields = ['job_id', 'job_name', 'length', 'no_of_holes', 'tool_code']
+        fields = ['job_id', 'job_name','tools']
 
+    tools = forms.ModelMultipleChoiceField(
+        queryset=Tool.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
 
 
 

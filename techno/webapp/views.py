@@ -27,17 +27,34 @@ def tool_create_view(request):
     return render(request, 'webapp/tool_form.html', {'form': form})
 
 
+from django.shortcuts import get_object_or_404
+
 def job_create_view(request):
     if request.method == 'POST':
-        form = JobForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/webapp/success_page/')
+        # Process the form data
+        job_id = request.POST.get('job_id')
+        job_name = request.POST.get('job_name')
+
+        selected_tools = request.POST.getlist('tools')
+        for tool_code in selected_tools:
+            length_field = f'length_{tool_code}'
+            holes_field = f'no_of_holes_{tool_code}'
+            length = request.POST.get(length_field)
+            no_of_holes = request.POST.get(holes_field)
+
+            # Retrieve the Tool instance based on the tool code
+            tool = get_object_or_404(Tool, tool_code=tool_code)
+
+            # Create the Job instance with the Tool reference and save it
+            job = Job.objects.create(job_id=job_id, job_name=job_name, length=length, no_of_holes=no_of_holes, tool_code=tool)
+            job.save()
+
+        return redirect('success_page')  # Replace 'success_page' with the actual URL or view name
     else:
-        form = JobForm()
+        # Retrieve tools for displaying in the form
+        tools = Tool.objects.all()
 
-    return render(request, 'webapp/job_form.html', {'form': form})
-
+    return render(request, 'webapp/job_form.html', {'tools': tools})
 
 def employee_delete_view(request, emp_ssn):
     employee = get_object_or_404(Employee, emp_ssn=emp_ssn)
