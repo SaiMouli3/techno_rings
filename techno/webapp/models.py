@@ -23,7 +23,7 @@ class Tool(models.Model):
     tool_efficiency = models.FloatField(default=None, null=True)
 
     def __str__(self):
-        return f"Tool: {self.tool_name} (Code: {self.tool_code})"
+        return f"Tool: {self.tool_name} "
 
 
 # Job Table

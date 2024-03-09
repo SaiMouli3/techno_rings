@@ -25,7 +25,7 @@
       {% for tool in tools %}
         <label>
           <input type="checkbox" name="tools" value="{{ tool.tool_code }}" data-tool-code="{{ tool.tool_code }}">
-          {{ tool.tool_name }} (Code: {{ tool.tool_code }})
+          {{ tool.tool_name }}
         </label>
         <div class="tool-details" id="{{ tool.tool_code }}" style="display:none;">
           <label for="id_length_{{ tool.tool_code }}">Length for {{ tool.tool_name }}</label>
