@@ -1,5 +1,5 @@
 from django import forms
-from .models import Employee, Tool, Job
+from .models import Employee, Tool, Job, Machine
 
 
 class EmployeeForm(forms.ModelForm):
@@ -26,4 +26,13 @@ class JobForm(forms.ModelForm):
     )
 
 
+class MachineForm(forms.ModelForm):
+    class Meta:
+        model = Machine
+        fields = ['machine_id', 'machine_name', 'jobs', 'tool_name']
 
+    jobs = forms.ModelMultipleChoiceField(
+        queryset=Job.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True,
+    )
