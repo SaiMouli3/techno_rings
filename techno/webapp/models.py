@@ -13,6 +13,14 @@ class Employee(models.Model):
         return f"Details Of {self.emp_name}"
 
 
+class Employee2(models.Model):
+    emp_ssn = models.IntegerField()
+    emp_name = models.CharField(max_length=100)
+    emp_designation = models.CharField(max_length=10)
+    emp_shed = models.TextField()
+    emp_dept = models.FloatField(default=None, null=True)
+
+
 class Tool(models.Model):
     tool_code = models.CharField(primary_key=True, max_length=100)
     tool_name = models.CharField(max_length=100)

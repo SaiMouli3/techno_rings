@@ -1,14 +1,34 @@
+from django.forms import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import EmployeeForm, ToolForm, JobForm, MachineForm
-from .models import Employee, Tool, Job, Machine
+from rest_framework.generics import CreateAPIView
+from rest_framework.response import Response
+from .forms import EmployeeForm, JobForm, MachineForm, ToolForm, ToolFormSet
+from .models import Employee, Tool, Job, Machine, Breakdown
 from rest_framework import generics
-from .serializers import EmployeeSerializer
-from django.http import JsonResponse
+from .serializers import EmployeeSerializer, JobSerializer, BreakdownSerializer
+from django.http import JsonResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Employee
+from .serializers import EmployeeSerializer
+
+@api_view(['PUT'])
+def update_employee(request, ssn):
+    try:
+        employee = Employee.objects.get(emp_ssn=ssn)
+    except Employee.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = EmployeeSerializer(employee, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -17,28 +37,37 @@ def get_csrf_token(request):
     return JsonResponse({'csrfToken': token})
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class EmployeeCreateView(View):
-    def post(self, request, *args, **kwargs):
-        data = request.POST
-        serializer = EmployeeSerializer(data=data)
-
-        if serializer.is_valid():
-            new_employee = serializer.save()
-            return JsonResponse({
-                'emp_ssn': new_employee.emp_ssn,
-                'emp_name': new_employee.emp_name,
-                'address': new_employee.address,
-                'mobile': new_employee.mobile,
-                'emp_efficiency': new_employee.emp_efficiency,
-            })
-        else:
-            return JsonResponse({'error': 'Invalid form data'}, status=400)
-
-
 class EmployeeList(generics.ListAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
+
+
+class EmployeeCreateView(CreateAPIView):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+
+
+class JobsList(generics.ListAPIView):
+    queryset = Job.objects.all()
+    serializer_class = JobSerializer
+
+
+class BreakdownList(generics.ListAPIView):
+    queryset = Breakdown.objects.all()
+    serializer_class = BreakdownSerializer
+
+
+
+
+from django.http import JsonResponse
+from .models import Performs
+
+def performs_data(request):
+    # Query the Performs model to get all data
+    performs_data = Performs.objects.all().values('date', 'achieved', 'target')
+    # Convert QuerySet to list of dictionaries
+    data = list(performs_data)
+    return JsonResponse(data, safe=False)
 
 
 def employee_create_view(request):
@@ -55,14 +84,25 @@ def employee_create_view(request):
 
 def tool_create_view(request):
     if request.method == 'POST':
-        form = ToolForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/webapp/success_page/')
-    else:
-        form = ToolForm()
+        formset = ToolFormSet(request.POST)
 
-    return render(request, 'webapp/tool_form.html', {'form': form})
+        if formset.is_valid():
+            # Save each form in the formset to the database
+            for form in formset:
+                form.save()
+
+            return JsonResponse({'success': True})  # Return success response
+        else:
+            errors = {'non_form_errors': formset.non_form_errors(), 'forms': []}
+
+            # Add form errors to the response
+            for form in formset:
+                form_errors = form.errors.as_json()
+                errors['forms'].append(form_errors)
+
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
+
+    return render(request, 'webapp/tool_form.html', {'formset': ToolFormSet()})
 
 
 def job_create_view(request):

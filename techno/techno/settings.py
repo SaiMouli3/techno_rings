@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'webapp',
     'corsheaders',
+    'rest_framework',
+    'import_export',
+
 ]
 
 MIDDLEWARE = [
@@ -77,7 +80,8 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Add the origin of your React application
+    "http://localhost:5173",
+    "http://localhost:3000",
 ]
 
 WSGI_APPLICATION = 'techno.wsgi.application'
@@ -138,3 +142,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+IMPORT_EXPORT_USE_TRANSACTIONS = True

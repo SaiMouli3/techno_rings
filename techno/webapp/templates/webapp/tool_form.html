@@ -1,17 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Tool Form</title>
+    <meta charset="UTF-8">
+    <title>Add Tools</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
 
-<h2>Tool Form</h2>
+<h2>Add Tools</h2>
 
-<form method="post" action="{% url 'tool_create_view' %}">
+<form method="post" id="tool-form">
     {% csrf_token %}
-    {{ form.as_p }}
+    <div id="formset-container">
+        {{ formset.management_form }}
+
+        {% for form in formset %}
+            {{ form.as_table }}
+        {% endfor %}
+    </div>
+
+    <button type="button" id="add-form">Add Tool</button>
     <button type="submit">Submit</button>
 </form>
+
+<script>
+    $(document).ready(function () {
+        let formsetContainer = $('#formset-container');
+        let addFormButton = $('#add-form');
+
+        addFormButton.on('click', function () {
+            let totalForms = parseInt($('#id_form-TOTAL_FORMS').val());
+            let newForm = formsetContainer.find('.form:first').clone();
+
+            newForm.find(':input').each(function () {
+                let name = $(this).attr('name').replace(`form-${totalForms - 1}-`, `form-${totalForms}-`);
+                let id = $(this).attr('id').replace(`form-${totalForms - 1}-`, `form-${totalForms}-`);
+                $(this).attr({'name': name, 'id': id, 'value': ''});
+            });
+
+            formsetContainer.append(newForm);
+            $('#id_form-TOTAL_FORMS').val(totalForms + 1);
+        });
+    });
+</script>
 
 </body>
 </html>
